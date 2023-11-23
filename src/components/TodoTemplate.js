@@ -74,12 +74,44 @@ todoInput에게 todoText를 받아오는 함수
     setTodos(todos.filter((todo) => todo.id !== id));
   };
 
+  // 할 일 체크 처리 함수
+  const checkTodo = (id) => {
+    /*
+    방법1
+    const copyTodos = [...todos]; // 배열 복사해왔음
+    for (let cTodo of copyTodos) {
+      if (cTodo.id === id) {
+        cTodo.done = !cTodo.done;
+      }
+    }
+    setTodos(copyTodos);
+    */
+    // 방법2
+    setTodos(
+      todos.map((todo) =>
+        todo.id === id ? { ...todo, done: !todo.done } : todo
+      )
+    );
+  };
+
+  // 체크가 안 된 할 일의 개수 카운트 하기
+  const countRestTodo = () => todos.filter((todo) => !todo.done).length; // !todo.done -> false인 애들 말하는 것임
+  // 배열 안에 남은 객체는 done: true 인 애들이니까 배열의 길이를 알면 끝
+  /*
+  내가 한 버전
+  let count = 0;
+  const countRestTodo = {
+    // 객체가 잇는데 그 안에 done의 값이 true 인 애들만 카운트ㅏ하기
+    todos.map(todo => todo.done === true ? count++ : )
+};*/
+
   return (
     <div className='TodoTemplate'>
-      <TodoHeader />
+      <TodoHeader count={countRestTodo} />
       <TodoMain
         todoList={todos}
         remove={removeTodo}
+        check={checkTodo}
       />
       <TodoInput addTodo={addTodo} />
     </div>
