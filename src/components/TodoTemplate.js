@@ -1,39 +1,17 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import TodoHeader from './TodoHeader';
 import TodoMain from './TodoMain';
 import TodoInput from './TodoInput';
 import './scss/TodoTemplate.scss';
 
 const TodoTemplate = () => {
-  // 서버에 할 일 목록(json)을 요청(fetch)해서 받아와야 함 -> 나중에 하자!
+  // 서버에 할 일 목록(json)을 요청(fetch)해서 받아와야 함
+  const API_BASE_URL = 'http://localhost:8181/api/todos'; // 여러번 사용하기 귀찮아서 변수로 선언
+  // 목록은 페이지가 띄워지자마자 나타나야 함.
+  // 시작하자 렌더링 시켜주는 훅 useEffect를 사용하자! + 상태변화관리인 useState도 같이 사용
 
   // todos 배열을 상태 관리하겠다
-  const [todos, setTodos] = useState([
-    {
-      // 객체로 관리 -> 객체 하나가 할일 1개
-      id: 1,
-      title: '아침 산책하기',
-      done: true,
-    },
-    {
-      // 객체로 관리 -> 객체 하나가 할일 1개
-      id: 2,
-      title: '오늘 주간 신문 읽기',
-      done: true,
-    },
-    {
-      // 객체로 관리 -> 객체 하나가 할일 1개
-      id: 3,
-      title: '샌드위치 사먹기',
-      done: false,
-    },
-    {
-      // 객체로 관리 -> 객체 하나가 할일 1개
-      id: 4,
-      title: '리액트 복습하기',
-      done: false,
-    },
-  ]);
+  const [todos, setTodos] = useState([]);
 
   // id가 시퀀스 함수(DB 연동시키면 필요 없어짐.)
   const makeNewId = () => {
@@ -43,17 +21,16 @@ const TodoTemplate = () => {
   };
 
   /*
-todoInput에게 todoText를 받아오는 함수
-자식 컴포넌트가 부모컴포넌트에게 데이터를 전달할 때는
-일반적인 props 사용이 불가능.
-부모 컴포넌트에서 함수를 선언(매개변수 꼭 선언) -> props로 함수를 전달
-자식 컴포넌트에서 전달받은 함수를 호출하면서 매개 값으로 데이터를 전달.
-*/
+    todoInput에게 todoText를 받아오는 함수
+    자식 컴포넌트가 부모컴포넌트에게 데이터를 전달할 때는
+    일반적인 props 사용이 불가능.
+    부모 컴포넌트에서 함수를 선언(매개변수 꼭 선언) -> props로 함수를 전달
+    자식 컴포넌트에서 전달받은 함수를 호출하면서 매개 값으로 데이터를 전달.
+  */
+
   const addTodo = (todoText) => {
     const newTodo = {
-      id: makeNewId(),
       title: todoText,
-      done: false,
     }; // 나중에 fetch를 이용해서 백엔드에 insert 요청 보내야함
     /*
     1. todos.push(newTodo); : (X) -> 이렇게 작성하면 안된다. 상태 변수(useState 변수)는 setter로 변경해야 함
@@ -61,22 +38,64 @@ todoInput에게 todoText를 받아오는 함수
     - react의 상태 변수는 불변성(immutable)을 가지기 때문에
     기존 상태에서 변경은 불가능 -> 새로운 상태로 만들어서 변경해야 한다.
     */
-
-    setTodos((oldTodos) => {
-      // oldTodos에는 가장 최신의 상태값(스냅샷)객체가 온다.
-      return [...oldTodos, newTodo];
-    });
+    //   setTodos((oldTodos) => {
+    //     // oldTodos에는 가장 최신의 상태값(스냅샷)객체가 온다.
+    //     return [...oldTodos, newTodo];
+    //   });
+    fetch(API_BASE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newTodo),
+    })
+      .then((res) => res.json())
+      .then((json) => {
+        setTodos(json.todos);
+      });
   };
 
   // 할 일 삭제 처리 함수
   const removeTodo = (id) => {
     // 주어진 배열의 값들을 순회하여 조건에 맞는 요소들만 모아서 새로운 배열로 리턴.
-    setTodos(todos.filter((todo) => todo.id !== id));
+    // setTodos(todos.filter((todo) => todo.id !== id));
+    fetch(`${API_BASE_URL}/${id}`, {
+      method: 'DELETE',
+    })
+      .then((res) => res.json())
+      .then((json) => {
+        console.log('data -> ', json);
+        setTodos(json.todos);
+      });
   };
 
   // 할 일 체크 처리 함수
-  const checkTodo = (id) => {
-    /*
+  const checkTodo = (id, done) => {
+    fetch(API_BASE_URL, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        done: !done,
+        id: id,
+      }),
+    })
+      .then((res) => res.json())
+      .then((json) => setTodos(json.todos));
+  };
+
+  /*
+    내가 시도한 버전
+    fetch(API_BASE_URL, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(id, done),
+    })
+      .then((res) => res.json())
+      .then((json) => {
+        console.log(json);
+        if(json.todos.done)
+        setTodos(json.todos);
+      });
+    */
+  /*
     방법1
     const copyTodos = [...todos]; // 배열 복사해왔음
     for (let cTodo of copyTodos) {
@@ -86,13 +105,12 @@ todoInput에게 todoText를 받아오는 함수
     }
     setTodos(copyTodos);
     */
-    // 방법2
-    setTodos(
-      todos.map((todo) =>
-        todo.id === id ? { ...todo, done: !todo.done } : todo
-      )
-    );
-  };
+  // 방법2
+  // setTodos(
+  //   todos.map((todo) =>
+  //     todo.id === id ? { ...todo, done: !todo.done } : todo
+  //   )
+  // );
 
   // 체크가 안 된 할 일의 개수 카운트 하기
   const countRestTodo = () => todos.filter((todo) => !todo.done).length; // !todo.done -> false인 애들 말하는 것임
@@ -104,6 +122,19 @@ todoInput에게 todoText를 받아오는 함수
     // 객체가 잇는데 그 안에 done의 값이 true 인 애들만 카운트ㅏ하기
     todos.map(todo => todo.done === true ? count++ : )
 };*/
+
+  useEffect(() => {
+    // 여기 안에 fetch문을 작성해서 목록 가져와서 화면에 뿌릴 것임
+    // 페이지가 처음 렌더링 됨과 동시에 할 일 목록을 서버에 요청해서 뿌려 주겠습니다.
+    fetch(API_BASE_URL)
+      .then((res) => res.json())
+      .then((json) => {
+        console.log(json);
+
+        // fetch를 통해 받아온 데이터를 상태 변수에 할당
+        setTodos(json.todos);
+      });
+  }, []);
 
   return (
     <div className='TodoTemplate'>
