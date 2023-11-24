@@ -2,7 +2,7 @@ import React from 'react';
 import { MdDelete, MdDone } from 'react-icons/md';
 import cn from 'classnames';
 
-import './scss/TodoItem.scss';
+import '../scss/TodoItem.scss';
 
 const TodoItem = ({ item, remove, check }) => {
   const { id, title, done } = item;

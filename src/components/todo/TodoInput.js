@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { MdAdd } from 'react-icons/md';
 import cn from 'classnames';
-import './scss/TodoInput.scss';
+import '../scss/TodoInput.scss';
 
 const TodoInput = ({ addTodo }) => {
   // 입력창이 열리는 여부를 표현하는 상태 값
