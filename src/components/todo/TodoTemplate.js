@@ -3,10 +3,11 @@ import TodoHeader from './TodoHeader';
 import TodoMain from './TodoMain';
 import TodoInput from './TodoInput';
 import '../scss/TodoTemplate.scss';
+import { API_BASE_URL as BASE, TODO } from '../../config/host-config';
 
 const TodoTemplate = () => {
   // 서버에 할 일 목록(json)을 요청(fetch)해서 받아와야 함
-  const API_BASE_URL = 'http://localhost:8181/api/todos'; // 여러번 사용하기 귀찮아서 변수로 선언
+  const API_BASE_URL = BASE + TODO; // 여러번 사용하기 귀찮아서 변수로 선언
   // 목록은 페이지가 띄워지자마자 나타나야 함.
   // 시작하자 렌더링 시켜주는 훅 useEffect를 사용하자! + 상태변화관리인 useState도 같이 사용
 
