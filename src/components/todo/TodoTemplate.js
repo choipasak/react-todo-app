@@ -29,7 +29,7 @@ const TodoTemplate = () => {
     자식 컴포넌트에서 전달받은 함수를 호출하면서 매개 값으로 데이터를 전달.
   */
 
-  const addTodo = (todoText) => {
+  const addTodo = async (todoText) => {
     const newTodo = {
       title: todoText,
     }; // 나중에 fetch를 이용해서 백엔드에 insert 요청 보내야함
@@ -43,6 +43,7 @@ const TodoTemplate = () => {
     //     // oldTodos에는 가장 최신의 상태값(스냅샷)객체가 온다.
     //     return [...oldTodos, newTodo];
     //   });
+    /*
     fetch(API_BASE_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -52,6 +53,15 @@ const TodoTemplate = () => {
       .then((json) => {
         setTodos(json.todos);
       });
+      */
+    const res = await fetch(API_BASE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newTodo),
+    });
+
+    const json = await res.json();
+    setTodos(json.todos);
   };
 
   // 할 일 삭제 처리 함수

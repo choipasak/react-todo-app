@@ -1,9 +1,23 @@
 import { AppBar, Grid, Toolbar, Typography } from '@mui/material';
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useContext, useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import './Header.scss';
+import { isLogin, getLoginUserInfo } from '../../utils/login-util';
+import AuthContext from '../../utils/AuthContext';
 
 const Header = () => {
+  const redirection = useNavigate();
+
+  // AuthContext에서 로그인 상태를 가져옵니다.
+  const { isLoggedIn, userName, onLogout } = useContext(AuthContext);
+
+  // 로그아웃 핸들러
+  const logoutHandler = () => {
+    // AuthContext의 onLogout 함수를 호출하여 로그인 상태를 업데이트 합니다.
+    onLogout();
+    redirection('/login');
+  };
+
   return (
     <AppBar
       position='fixed'
@@ -27,7 +41,12 @@ const Header = () => {
                 alignItems: 'center',
               }}
             >
-              <Typography variant='h4'>오늘의 할일</Typography>
+              <Typography variant='h4'>
+                {isLogin() // login-utils에서 가져온 것임. 여기로 true가 왔으면 토큰이 있는 것.
+                  ? userName + '님'
+                  : '오늘'}
+                의 할일
+              </Typography>
             </div>
           </Grid>
 
@@ -41,8 +60,19 @@ const Header = () => {
                 실제 브라우저에서도 부드럽게 이동하는 것을 볼 수 있음.
                 (a태그는 기능을 억제하고 이동까지 시켜줘야 했었음)
              */}
-              <Link to='/login'>로그인</Link>
-              <Link to='/join'>회원가입</Link>
+              {isLoggedIn ? (
+                <button
+                  className='logout-btn'
+                  onClick={logoutHandler}
+                >
+                  로그아웃
+                </button>
+              ) : (
+                <>
+                  <Link to='/login'>로그인</Link>
+                  <Link to='/join'>회원가입</Link>
+                </>
+              )}
             </div>
           </Grid>
         </Grid>
