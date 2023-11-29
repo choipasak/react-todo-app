@@ -42,7 +42,7 @@ const Header = () => {
               }}
             >
               <Typography variant='h4'>
-                {isLogin() // login-utils에서 가져온 것임. 여기로 true가 왔으면 토큰이 있는 것.
+                {isLoggedIn // login-utils에서 가져온 것임. 여기로 true가 왔으면 토큰이 있는 것.
                   ? userName + '님'
                   : '오늘'}
                 의 할일
