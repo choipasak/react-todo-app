@@ -86,6 +86,8 @@ const TodoTemplate = () => {
       setTodos(json.todos);
     } else if (res.status === 401) {
       alert('COMMON등급 회원은 일정 등록이 5개로 제한 됩니다.');
+    } else if (res.status === 400) {
+      alert('올바르지 않은 입력값 입니다!');
     }
   };
 
