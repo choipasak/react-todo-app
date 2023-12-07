@@ -10,5 +10,5 @@ const CLIENT_ID = process.env.REACT_APP_REST_API_KEY;
 const REDIRECT_URI = process.env.REACT_APP_REDIRECT_URL;
 
 // 만들어진 url 준다.
-export const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code`;
+export const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code&prompt=login`;
 // 여기에 카카오에서 제공한 GET요청 경로를 작성 해 준다.

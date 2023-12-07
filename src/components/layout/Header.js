@@ -18,7 +18,13 @@ const Header = () => {
   const { isLoggedIn, userName, onLogout } = useContext(AuthContext);
 
   // 로그아웃 핸들러
-  const logoutHandler = () => {
+  const logoutHandler = async () => {
+    const res = await fetch(`${API_BASE_URL}${USER}/logout`, {
+      method: 'GET',
+      headers: {
+        Authorization: 'Bearer ' + localStorage.getItem('ACCESS_TOKEN'),
+      },
+    });
     // AuthContext의 onLogout 함수를 호출하여 로그인 상태를 업데이트 합니다.
     onLogout();
     redirection('/login');

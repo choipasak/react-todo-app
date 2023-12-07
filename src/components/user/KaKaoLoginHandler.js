@@ -1,7 +1,11 @@
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { API_BASE_URL, USER } from '../../config/host-config';
+import AuthContext from '../../utils/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const KaKaoLoginHandler = () => {
+  const { onLogin } = useContext(AuthContext);
+  const redirection = useNavigate();
   console.log(
     '사용자가 동의화면을 통해 필수정보 동의 후 KaKao 서버에서 redirect를 진행함!'
   );
@@ -14,9 +18,13 @@ const KaKaoLoginHandler = () => {
     // 컴포넌트가 렌더링 될 때, 인가 코드를 백으로 전송하는 fetch 요청!
     const kakaoLogin = async () => {
       const res = await fetch(REQUEST_URL + '/kakaoLogin?code=' + code);
-    };
 
-    // 렌더링 될 때 실행 되게 여기에 작성
+      const { token, userName, email, role } = await res.json(); // DTO가 리턴 되서 json()
+
+      // 렌더링 될 때 실행 되게 여기에 작성
+      onLogin(token, userName, role);
+      redirection('/');
+    };
     kakaoLogin();
   }, []);
 

@@ -8,6 +8,7 @@ import { Spinner } from 'reactstrap';
 import { API_BASE_URL as BASE, TODO, USER } from '../../config/host-config';
 import { useNavigate } from 'react-router-dom';
 import { getLoginUserInfo } from '../../utils/login-util';
+import HttpService from '../../utils/httpService';
 
 const TodoTemplate = () => {
   const redirection = useNavigate();
@@ -188,6 +189,16 @@ const TodoTemplate = () => {
   };
 
   useEffect(() => {
+    // 페이지가 처음 렌더링 됨과 동시에 할 일 목록을 서버에 요청해서 뿌려 주겠습니다.
+    HttpService(API_BASE_URL, {
+      method: 'GET',
+      headers: requestHeader,
+    });
+
+    if (res) {
+      if (res.status === 200) return res.json();
+    }
+
     // console.log(json);
     // 여기 안에 fetch문을 작성해서 목록 가져와서 화면에 뿌릴 것임
     // 페이지가 처음 렌더링 됨과 동시에 할 일 목록을 서버에 요청해서 뿌려 주겠습니다.
